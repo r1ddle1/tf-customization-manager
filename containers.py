@@ -113,36 +113,22 @@ class SoundContainer(QHBoxLayout):
             dialog.destroy()
             return
 
-        os.chdir(self.tf_path + '/tf')
+        # Do not use os.chdir() because it brakes icon loading!
+
         # In case if there's no 'custom' folder in tf
-        if 'custom' not in os.listdir():
-            os.mkdir('custom')
-            os.chdir('custom')
-
-            os.mkdir('tf2hitsounds')
-            os.chdir('tf2hitsounds')
-
-            os.mkdir('sound')
-            os.chdir('sound')
-
-            os.mkdir('ui')
-            os.chdir('ui')
+        if 'custom' not in os.listdir(self.tf_path + '/tf'):
+            os.mkdir(self.tf_path + '/tf/custom')
+            os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds')
+            os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound')
+            os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui')
         else:
-            os.chdir('custom')
-            # In case if there's no 'tfhitsounds' folder in tf/custom
-            if 'tf2hitsounds' not in os.listdir():
-                os.mkdir('tf2hitsounds')
-                os.chdir('tf2hitsounds')
+            # In case if there's no 'tf2hitsounds' folder in tf/custom
+            if 'tf2hitsounds' not in os.listdir(self.tf_path + '/tf/custom'):
+                os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds')
+                os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound')
+                os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui')
 
-                os.mkdir('sound')
-                os.chdir('sound')
-
-                os.mkdir('ui')
-                os.chdir('ui')
-            else:
-                os.chdir('tf2hitsounds/sound/ui')
-
-        with open(sound_name, 'wb') as file:
+        with open(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui/' + sound_name, 'wb') as file:
             self.sound.seek(0)
             file.write(self.sound.read())
 
