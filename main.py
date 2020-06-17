@@ -111,22 +111,19 @@ class RequestTFPathDialog(QDialog):
 def main():
     app = QApplication(argv)
 
-    os_name = os.name
-
     # Let's try to find TF2 ourselves
+    os_name = os.name
     try:
-        default_path = ""
-        if os_name == "posix":
-            default_path = os.path.expanduser("~/.steam/steam/steamapps/common/Team Fortress 2/")
-        elif os_name == "nt":
-            raise FileNotFoundError  # I dunno 'cause I don't use windows
+        if os_name == 'posix':
+            tf_path = os.path.expanduser('~/.steam/steam/steamapps/common/Team Fortress 2/')
+        elif os_name == 'nt':
+            tf_path = 'C:/Program Files (x86)/Steam/steamapps/common/Team Fortress 2'
+        else:
+            raise FileNotFoundError
 
-        os.listdir(default_path)
-        tf_path = default_path
-    # Looks like, we can't find TF path
-    # Let's ask the user to specify it
+        os.listdir(tf_path)  # This line checks if path exists. If not exception is raised
+    # Looks like, we can't find TF path. Let's ask the user to specify it
     except FileNotFoundError:
-        # Request TF path Dialog
         rtfpd = RequestTFPathDialog()
         rtfpd.exec_()
         tf_path = rtfpd.tf_path
