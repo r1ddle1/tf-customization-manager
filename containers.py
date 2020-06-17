@@ -87,16 +87,19 @@ class SoundContainer(QHBoxLayout):
         self.addWidget(buttons_widget)
 
     def on_play_btn_clicked(self, widget):
-        self.sound.seek(0)
+        try:
+            self.sound.seek(0)
 
-        wave_read = wave.open(self.sound, 'rb')
-        audio_data = wave_read.readframes(wave_read.getnframes())
-        num_channels = wave_read.getnchannels()
-        bytes_per_sample = wave_read.getsampwidth()
-        sample_rate = wave_read.getframerate()
+            wave_read = wave.open(self.sound, 'rb')
+            audio_data = wave_read.readframes(wave_read.getnframes())
+            num_channels = wave_read.getnchannels()
+            bytes_per_sample = wave_read.getsampwidth()
+            sample_rate = wave_read.getframerate()
 
-        wave_obj = sa.WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
-        self.play_obj = wave_obj.play()
+            wave_obj = sa.WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
+            self.play_obj = wave_obj.play()
+        except ValueError:
+            print("Error! Couldn't play sound")
 
     def on_stop_btn_clicked(self, widget):
         self.play_obj.stop()
