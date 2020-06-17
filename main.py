@@ -1,16 +1,12 @@
-from PyQt5.QtWidgets import *
+import os
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-
-import os
+from PyQt5.QtWidgets import *
 
 import pages
 
-# Only needed for access to command line arguments
-from sys import argv
 
-
-# Subclass QMainWindow to customise your application's main window
 class MainWindow(QMainWindow):
     def __init__(self, tf_path, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -109,7 +105,7 @@ class RequestTFPathDialog(QDialog):
 
 
 def main():
-    app = QApplication(argv)
+    app = QApplication([])
 
     # Let's try to find TF2 ourselves
     os_name = os.name
