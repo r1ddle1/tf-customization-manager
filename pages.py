@@ -1,4 +1,6 @@
-import huds_tf_parser
+from PyQt5.QtWidgets import QStackedWidget, QErrorMessage, QFrame
+
+import file_parser
 from containers import *
 
 
@@ -10,19 +12,98 @@ class SoundsPage(QWidget):
         self.main_window_ptr = main_window_ptr  # For creating dialogs
         self.main_layout = QHBoxLayout()
 
-        self.create_options_part()
-        self.create_browser_part()
+        self._load_cfg()
+
+        self._create_options_part()
+        self._create_browser_part()
+
+        self._switch_to_page(0)
 
         self.setLayout(self.main_layout)
         self.show()
 
-    def create_browser_part(self):
+    def _create_options_part(self):
+        main_vbox = QVBoxLayout()
+        main_vbox.setAlignment(Qt.AlignCenter)
+        main_vbox.setSpacing(30)
+
+        # Refresh part
+        refresh_hbox = QHBoxLayout()
+
+        refresh_label = QLabel('#REFRESH_LABEL')
+        refresh_btn = QPushButton('Refresh DB')
+        refresh_btn.setIcon(QIcon('img/refresh.png'))
+        refresh_btn.clicked.connect(self._refresh_db)
+
+        refresh_hbox.addWidget(refresh_label)
+        refresh_hbox.addWidget(refresh_btn, alignment=Qt.AlignRight)
+
+        # Kill sound part
+        ks_part = QWidget()
+
+        vert_ks_layout = QVBoxLayout()
+        ks_part.setLayout(vert_ks_layout)
+
+        ks_label = QLabel('Current Killsound')
+        ks_label.setAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+        vert_ks_layout.addWidget(ks_label)
+
+        ks_frame_layout = QHBoxLayout()
+
+        ks_frame = QFrame()
+        ks_frame.setFrameStyle(QFrame.StyledPanel)
+        ks_frame.setLayout(ks_frame_layout)
+        vert_ks_layout.addWidget(ks_frame)
+
+        play_curr_ks_btn = QPushButton('Play')
+        play_curr_ks_btn.setIcon(QIcon('img/play.png'))
+        ks_frame_layout.addWidget(play_curr_ks_btn)
+
+        del_curr_ks_btn = QPushButton('Delete')
+        del_curr_ks_btn.setIcon(QIcon('img/delete.png'))
+        del_curr_ks_btn.clicked.connect(lambda: self._delete_current_sound('killsound'))
+        ks_frame_layout.addWidget(del_curr_ks_btn)
+
+        # Hit sound part
+        hs_part = QWidget()
+
+        vert_hs_layout = QVBoxLayout()
+        hs_part.setLayout(vert_hs_layout)
+
+        hs_label = QLabel('Current HitSound')
+        hs_label.setAlignment(Qt.AlignHCenter | Qt.AlignBottom)
+        vert_hs_layout.addWidget(hs_label)
+
+        hs_frame_layout = QHBoxLayout()
+
+        hs_frame = QFrame()
+        hs_frame.setFrameStyle(QFrame.StyledPanel)
+        hs_frame.setLayout(hs_frame_layout)
+        vert_hs_layout.addWidget(hs_frame)
+
+        play_curr_hs_btn = QPushButton('Play')
+        play_curr_hs_btn.setIcon(QIcon('img/play.png'))
+        hs_frame_layout.addWidget(play_curr_hs_btn)
+
+        del_curr_hs_btn = QPushButton('Delete')
+        del_curr_hs_btn.setIcon(QIcon('img/delete.png'))
+        del_curr_hs_btn.clicked.connect(lambda: self._delete_current_sound('hitsound'))
+        hs_frame_layout.addWidget(del_curr_hs_btn)
+
+        # End
+        main_vbox.addLayout(refresh_hbox)
+        main_vbox.addWidget(ks_part)
+        main_vbox.addWidget(hs_part)
+
+        self.main_layout.addLayout(main_vbox)
+
+    def _create_browser_part(self):
         browser_part = QVBoxLayout()
-        # browser_part.setSpacing(0)
-        self.current_page_index = 0
+        browser_part.setSpacing(0)
         self.browser_stack = QStackedWidget()
+        self.max_pages_count = 100
         self.current_page_index = 0  # Index of pages begins with 0
-        self.max_pages_count = 100  # XXX: Parse page and get maximum pages count
+        self.sounds = file_parser.get_db('sounds_db')
 
         browser_label = QLabel('Sounds Browser')
         browser_label.setAlignment(Qt.AlignCenter)
@@ -39,14 +120,14 @@ class SoundsPage(QWidget):
         go_back_btn.setIcon(QIcon('img/prev.png'))
         go_forward_button.setIcon(QIcon('img/next.png'))
 
-        go_back_btn.clicked.connect(lambda: self.switch_to_page(self.current_page_index - 1))
-        go_forward_button.clicked.connect(lambda: self.switch_to_page(self.current_page_index + 1))
+        go_back_btn.clicked.connect(lambda: self._switch_to_page(self.current_page_index - 1))
+        go_forward_button.clicked.connect(lambda: self._switch_to_page(self.current_page_index + 1))
 
         page_switching_hbox.addWidget(go_back_btn)
         page_switching_hbox.addWidget(self.current_page_text)
         page_switching_hbox.addWidget(go_forward_button)
 
-        self.switch_to_page(self.current_page_index)
+        self._switch_to_page(self.current_page_index)
 
         browser_part.addWidget(browser_label)
         browser_part.addWidget(self.browser_stack)
@@ -54,81 +135,55 @@ class SoundsPage(QWidget):
 
         self.main_layout.addLayout(browser_part)
 
-    def create_options_part(self):
-        main_vbox = QVBoxLayout()
-
-        refresh_hbox = QHBoxLayout()
-        current_ks_hbox = QHBoxLayout()
-        current_hs_hbox = QHBoxLayout()
-
-        refresh_label = QLabel('Last refresh: ?ago\nPage cached: 1')
-        refresh_btn = QPushButton('Refresh')
-        refresh_btn.setIcon(QIcon('img/refresh.png'))
-        refresh_btn.clicked.connect(self.refresh_page)
-
-        current_ks_label = QLabel('Current killsound:???.wav')
-        del_curr_ks_btn = QPushButton('Delete')
-        del_curr_ks_btn.setIcon(QIcon('img/delete.png'))
-        del_curr_ks_btn.clicked.connect(lambda: self.delete_current_sound('killsound'))
-
-        current_hs_label = QLabel('Current hitsound: ???.wav')
-        del_curr_hs_btn = QPushButton('Delete')
-        del_curr_hs_btn.setIcon(QIcon('img/delete.png'))
-        del_curr_hs_btn.clicked.connect(lambda: self.delete_current_sound('hitsound'))
-
-        refresh_hbox.addWidget(refresh_label)
-        refresh_hbox.addWidget(refresh_btn, alignment=Qt.AlignRight)
-
-        current_ks_hbox.addWidget(current_ks_label)
-        current_ks_hbox.addWidget(del_curr_ks_btn)
-
-        current_hs_hbox.addWidget(current_hs_label)
-        current_hs_hbox.addWidget(del_curr_hs_btn)
-
-        main_vbox.addLayout(refresh_hbox)
-        main_vbox.addLayout(current_hs_hbox)
-        main_vbox.addLayout(current_ks_hbox)
-
-        self.main_layout.addLayout(main_vbox)
-
-    def delete_current_sound(self, sound):
+    def _delete_current_sound(self, sound):
         import os
         try:
             os.remove(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui/' + sound + '.wav')
-            del os
         except FileNotFoundError:
             dialog = QErrorMessage(self.main_window_ptr)
             dialog.showMessage("Error! There's no installed " + sound)
+        finally:
             del os
 
-    def refresh_page(self):
-        # If there's more than 1 children we need to remove the 2nd as it's
-        # old QVBoxLayout()
-        if len(self.browser_stack.currentWidget().children()) == 2:
-            self.browser_stack.currentWidget().children()[1].deleteLater()
+    def _load_cfg(self):
+        # cfg = file_parser.get_config('sounds')
+        # if not cfg:
+        #     return
+        # self.current_hs = cfg['current_hs']
+        # self.current_ks = cfg['current_ks']
+        pass
 
+    def save_cfg(self):
+        # values = {
+        #     'current_hs': self.current_hs,
+        #     'current_ks': self.current_ks
+        # }
+        # file_parser.write_config(values, 'sounds')
+        pass
+
+    def _refresh_db(self):
+        for i in self.browser_stack.children()[1:]:  # Ignore QStackedLayout
+            self.browser_stack.removeWidget(i)
+        self.sounds = file_parser.refresh_db('sounds_db')
+        self._load_current_page()
+
+    def _load_current_page(self):
         layout = QVBoxLayout()
 
-        widget = QWidget()
-        widget.setLayout(layout)
-
-        sound_containers = huds_tf_parser.parse_sounds(self.current_page_index + 1)
+        sound_containers = self.sounds[10 * self.current_page_index:10 * (self.current_page_index + 1)]
 
         for i in sound_containers:
-            title = i['title']
-            author = i['author']
-            download_link = i['link']
-
-            new_sound_container = SoundContainer(title,
-                                                 download_link,
-                                                 author,
+            new_sound_container = SoundContainer(i['title'],
+                                                 i['link'],
+                                                 i['author'],
                                                  self.tf_path,
-                                                 self.main_window_ptr)
-
+                                                 self.main_window_ptr,
+                                                 self)
             layout.addLayout(new_sound_container)
-        self.browser_stack.currentWidget().layout().addWidget(widget)
 
-    def switch_to_page(self, page_index):
+        self.browser_stack.currentWidget().setLayout(layout)
+
+    def _switch_to_page(self, page_index):
         if page_index > self.max_pages_count or page_index < 0:
             return
 
@@ -138,11 +193,7 @@ class SoundsPage(QWidget):
         if page_index < len(self.browser_stack.children()) - 1:  # First children -- QStackedLayout
             self.browser_stack.setCurrentIndex(self.current_page_index)
         else:
-            widget = QWidget()
-            widget.setLayout(QVBoxLayout())
-
-            self.browser_stack.addWidget(widget)
+            self.browser_stack.addWidget(QWidget())
             self.browser_stack.setCurrentIndex(page_index)
 
-            # self.refresh_label.setText('Last refresh: {} ago\nPage cached:{}'.format('?', len(self.pages)))
-            self.refresh_page()
+            self._load_current_page()

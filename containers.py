@@ -1,16 +1,22 @@
-import os
-import wave
+from os import mkdir, listdir
 from tempfile import TemporaryFile
+from wave import open as wave_open
 
-import requests
-import simpleaudio as sa
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QDialog, QLabel, QPushButton, QHBoxLayout, QVBoxLayout, QWidget
+from requests import get as requests_get
+from simpleaudio import WaveObject
+
+# Let's load icons in advance instead of loading 'em every time __init__ is called
+play_icon = None
+stop_icon = None
+install_icon = None
+parent = None
 
 
-def download_file(url):
-    resp = requests.get(url, stream=True)
+def _download_file(url):
+    resp = requests_get(url, stream=True)
 
     if resp.status_code != 200:
         print("Oops! Couldn't download a .wav file!")
@@ -22,18 +28,17 @@ def download_file(url):
 
 
 class InstallDialog(QDialog):
-    def __init__(self, parent):
-        super(QDialog, self).__init__(parent)
+    def __init__(self, _parent):
+        super(QDialog, self).__init__(_parent)
         self.setWindowTitle('Install mode')
 
-        label = QLabel("Install sound as...")
+        label = QLabel('Install sound as...')
 
-        kill_sound_btn = QPushButton("Killsound")
-        hit_sound_btn = QPushButton("Hitsound")
+        kill_sound_btn = QPushButton('Killsound')
+        hit_sound_btn = QPushButton('Hitsound')
 
         kill_sound_btn.clicked.connect(self.accept)
         hit_sound_btn.clicked.connect(self.reject)
-
 
         buttons_hbox = QHBoxLayout()
         buttons_hbox.addWidget(kill_sound_btn)
@@ -46,18 +51,24 @@ class InstallDialog(QDialog):
 
 
 class SoundContainer(QHBoxLayout):
-    def __init__(self, song_title, download_link, author, tf_path, main_window_ptr):
+    def __init__(self, song_title, download_link, author, tf_path, main_window_ptr, parent_):
         super().__init__()
 
+        # Load icons (only once!)
+        global play_icon, stop_icon, install_icon, parent
+
+        if not play_icon:
+            play_icon = QIcon('img/play.png')
+            stop_icon = QIcon('img/stop.png')
+            install_icon = QIcon('img/download.png')
+            parent = parent_
+
+        self.song_title = song_title
         self.main_window_ptr = main_window_ptr
         self.tf_path = tf_path
-        self.sound = download_file(download_link)
+        self.sound = None
         self.play_obj = None
         self.download_link = download_link
-
-        if not self.sound:
-            print("Error! Couldn't download .wav file!")
-            exit(-1)
 
         title = QLabel(song_title + ' (by ' + author + ')')
 
@@ -67,17 +78,17 @@ class SoundContainer(QHBoxLayout):
         buttons_widget = QWidget()
         buttons_widget.setLayout(buttons_hbox)
 
-        play_button = QPushButton('Play')
+        play_button = QPushButton()
         play_button.clicked.connect(self.on_play_btn_clicked)
-        play_button.setIcon(QIcon('img/play.png'))
+        play_button.setIcon(play_icon)
 
-        stop_button = QPushButton('Stop')
-        stop_button.clicked.connect(self.on_stop_btn_clicked)
-        stop_button.setIcon(QIcon('img/stop.png'))
+        stop_button = QPushButton()
+        stop_button.clicked.connect(lambda: self.play_obj.stop())
+        stop_button.setIcon(stop_icon)
 
-        install_button = QPushButton('Install')
+        install_button = QPushButton()
         install_button.clicked.connect(self.on_install_btn_clicked)
-        install_button.setIcon(QIcon('img/download.png'))
+        install_button.setIcon(install_icon)
 
         buttons_hbox.addWidget(play_button)
         buttons_hbox.addWidget(stop_button)
@@ -86,32 +97,33 @@ class SoundContainer(QHBoxLayout):
         self.addWidget(title)
         self.addWidget(buttons_widget)
 
-    def on_play_btn_clicked(self, widget):
+    def on_play_btn_clicked(self):
         try:
+            if not self.sound:
+                self.sound = _download_file(self.download_link)
             self.sound.seek(0)
 
-            wave_read = wave.open(self.sound, 'rb')
+            wave_read = wave_open(self.sound, 'rb')
             audio_data = wave_read.readframes(wave_read.getnframes())
             num_channels = wave_read.getnchannels()
             bytes_per_sample = wave_read.getsampwidth()
             sample_rate = wave_read.getframerate()
 
-            wave_obj = sa.WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
+            wave_obj = WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
             self.play_obj = wave_obj.play()
         except ValueError:
             print("Error! Couldn't play sound")
 
-    def on_stop_btn_clicked(self, widget):
-        self.play_obj.stop()
-
-    def on_install_btn_clicked(self, widget):
+    def on_install_btn_clicked(self):
         dialog = InstallDialog(self.main_window_ptr)
         response = dialog.exec_()
 
         if response == 1:  # Install as killsound
             sound_name = 'killsound.wav'
+            parent.current_ks = self.song_title
         elif response == 0:  # Hitsound
             sound_name = 'hitsound.wav'
+            parent.current_hs = self.song_title
         else:  # In case user closes dialog window
             dialog.destroy()
             return
@@ -119,17 +131,17 @@ class SoundContainer(QHBoxLayout):
         # Do not use os.chdir() because it brakes icon loading!
 
         # In case if there's no 'custom' folder in tf
-        if 'custom' not in os.listdir(self.tf_path + '/tf'):
-            os.mkdir(self.tf_path + '/tf/custom')
-            os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds')
-            os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound')
-            os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui')
+        if 'custom' not in listdir(self.tf_path + '/tf'):
+            mkdir(self.tf_path + '/tf/custom')
+            mkdir(self.tf_path + '/tf/custom/tf2hitsounds')
+            mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound')
+            mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui')
         else:
             # In case if there's no 'tf2hitsounds' folder in tf/custom
-            if 'tf2hitsounds' not in os.listdir(self.tf_path + '/tf/custom'):
-                os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds')
-                os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound')
-                os.mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui')
+            if 'tf2hitsounds' not in listdir(self.tf_path + '/tf/custom'):
+                mkdir(self.tf_path + '/tf/custom/tf2hitsounds')
+                mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound')
+                mkdir(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui')
 
         with open(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui/' + sound_name, 'wb') as file:
             self.sound.seek(0)

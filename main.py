@@ -1,10 +1,8 @@
 import os
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
+from PyQt5.QtWidgets import QMainWindow, QLineEdit, QFileDialog, QApplication
 
-import pages
+from pages import *
 
 
 class MainWindow(QMainWindow):
@@ -32,11 +30,11 @@ class MainWindow(QMainWindow):
         cfg_page = QWidget()
         cfg_page.setLayout(cfg_layout)
 
-        sounds_page = pages.SoundsPage(tf_path, main_window_ptr)
+        self.sounds_page = SoundsPage(tf_path, main_window_ptr)
 
         stack.addWidget(hud_page)
         stack.addWidget(cfg_page)
-        stack.addWidget(sounds_page)
+        stack.addWidget(self.sounds_page)
 
         # Stack Switcher
         # TBH stack switcher is awful. TODO: Make new good stack switcher
@@ -59,6 +57,9 @@ class MainWindow(QMainWindow):
         main_vbox.addWidget(stack)
 
         self.setCentralWidget(central_widget)
+
+    def on_quit(self):
+        self.sounds_page.save_cfg()
 
 
 class RequestTFPathDialog(QDialog):
@@ -126,6 +127,8 @@ def main():
 
     window = MainWindow(tf_path)
     window.show()
+
+    app.aboutToQuit.connect(window.on_quit)
 
     # Start the event loop.
     app.exec_()
