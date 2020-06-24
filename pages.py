@@ -4,6 +4,9 @@ import file_parser
 from containers import *
 
 
+SOUND_COUNT_ON_ONE_PAGE = 10
+
+
 class SoundsPage(QWidget):
     def __init__(self, tf_path, main_window_ptr):
         super(SoundsPage, self).__init__()
@@ -112,9 +115,9 @@ class SoundsPage(QWidget):
         browser_part = QVBoxLayout()
         browser_part.setSpacing(0)
         self.browser_stack = QStackedWidget()
-        self.max_pages_count = 100
-        self.current_page_index = 0  # Index of pages begins with 0
         self.sounds = file_parser.get_db('sounds_db')
+        self.max_pages_count = len(self.sounds) / SOUND_COUNT_ON_ONE_PAGE
+        self.current_page_index = 0  # Index of pages begins with 0
 
         browser_label = QLabel('Sounds Browser')
         browser_label.setAlignment(Qt.AlignCenter)
@@ -199,7 +202,8 @@ class SoundsPage(QWidget):
     def _load_current_page(self):
         layout = QVBoxLayout()
 
-        sound_containers = self.sounds[10 * self.current_page_index:10 * (self.current_page_index + 1)]
+        sound_containers = self.sounds[SOUND_COUNT_ON_ONE_PAGE * self.current_page_index:
+                                       SOUND_COUNT_ON_ONE_PAGE * (self.current_page_index + 1)]
 
         for i in sound_containers:
             new_sound_container = SoundContainer(i['title'],

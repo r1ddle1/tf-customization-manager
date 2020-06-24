@@ -28,17 +28,20 @@ def _download_file(url):
 
 
 def play_sound(file_object):
-    file_object.seek(0)
+    try:
+        file_object.seek(0)
 
-    wave_read = wave_open(file_object, 'rb')
-    audio_data = wave_read.readframes(wave_read.getnframes())
-    num_channels = wave_read.getnchannels()
-    bytes_per_sample = wave_read.getsampwidth()
-    sample_rate = wave_read.getframerate()
+        wave_read = wave_open(file_object, 'rb')
+        audio_data = wave_read.readframes(wave_read.getnframes())
+        num_channels = wave_read.getnchannels()
+        bytes_per_sample = wave_read.getsampwidth()
+        sample_rate = wave_read.getframerate()
 
-    wave_obj = WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
+        wave_obj = WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
 
-    return wave_obj.play()
+        return wave_obj.play()
+    except Exception as exception:
+        print("Error! Couldn't play sound: " + str(exception))
 
 
 class InstallDialog(QDialog):
@@ -112,12 +115,9 @@ class SoundContainer(QHBoxLayout):
         self.addWidget(buttons_widget)
 
     def on_play_btn_clicked(self):
-        try:
-            if not self.sound:
-                self.sound = _download_file(self.download_link)
-            self.play_obj = play_sound(self.sound)
-        except ValueError:
-            print("Error! Couldn't play sound")
+        if not self.sound:
+            self.sound = _download_file(self.download_link)
+        self.play_obj = play_sound(self.sound)
 
     def on_install_btn_clicked(self):
         dialog = InstallDialog(self.main_window_ptr)
