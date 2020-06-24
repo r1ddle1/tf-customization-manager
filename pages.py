@@ -12,6 +12,15 @@ class SoundsPage(QWidget):
         self.main_window_ptr = main_window_ptr  # For creating dialogs
         self.main_layout = QHBoxLayout()
 
+        self.hitsound = None
+        self.killsound = None
+
+        self._load_current_sounds()
+        if self.hitsound:
+            print('hitsound is installed')
+        if self.killsound:
+            print('its installed too')
+
         self._load_cfg()
 
         self._create_options_part()
@@ -57,6 +66,7 @@ class SoundsPage(QWidget):
 
         play_curr_ks_btn = QPushButton('Play')
         play_curr_ks_btn.setIcon(QIcon('img/play.png'))
+        play_curr_ks_btn.clicked.connect(lambda: play_sound(self.killsound))
         ks_frame_layout.addWidget(play_curr_ks_btn)
 
         del_curr_ks_btn = QPushButton('Delete')
@@ -83,6 +93,7 @@ class SoundsPage(QWidget):
 
         play_curr_hs_btn = QPushButton('Play')
         play_curr_hs_btn.setIcon(QIcon('img/play.png'))
+        play_curr_hs_btn.clicked.connect(lambda: play_sound(self.hitsound))
         hs_frame_layout.addWidget(play_curr_hs_btn)
 
         del_curr_hs_btn = QPushButton('Delete')
@@ -145,6 +156,24 @@ class SoundsPage(QWidget):
         finally:
             del os
 
+    def _load_current_sounds(self):
+        # Check dirs...
+        if 'custom' not in listdir(self.tf_path + '/tf'):
+            return
+        elif 'tf2hitsounds' not in listdir(self.tf_path + 'tf/custom'):
+            return
+        elif 'sound' not in listdir(self.tf_path + 'tf/custom/tf2hitsounds/'):
+            return
+        elif 'ui' not in listdir(self.tf_path + 'tf/custom/tf2hitsounds/sound/'):
+            return
+
+        contents = listdir(self.tf_path + 'tf/custom/tf2hitsounds/sound/ui/')
+        if 'hitsound.wav' in contents:
+            self.hitsound = open(self.tf_path + 'tf/custom/tf2hitsounds/sound/ui/hitsound.wav', 'rb')
+
+        if 'killsound.wav' in contents:
+            self.killsound = open(self.tf_path + 'tf/custom/tf2hitsounds/sound/ui/killsound.wav', 'rb')
+
     def _load_cfg(self):
         # cfg = file_parser.get_config('sounds')
         # if not cfg:
@@ -197,3 +226,6 @@ class SoundsPage(QWidget):
             self.browser_stack.setCurrentIndex(page_index)
 
             self._load_current_page()
+
+    def on_sound_installed(self):
+        self._load_current_sounds()

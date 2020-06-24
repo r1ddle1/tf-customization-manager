@@ -27,6 +27,20 @@ def _download_file(url):
     return temp_file
 
 
+def play_sound(file_object):
+    file_object.seek(0)
+
+    wave_read = wave_open(file_object, 'rb')
+    audio_data = wave_read.readframes(wave_read.getnframes())
+    num_channels = wave_read.getnchannels()
+    bytes_per_sample = wave_read.getsampwidth()
+    sample_rate = wave_read.getframerate()
+
+    wave_obj = WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
+
+    return wave_obj.play()
+
+
 class InstallDialog(QDialog):
     def __init__(self, _parent):
         super(QDialog, self).__init__(_parent)
@@ -61,10 +75,10 @@ class SoundContainer(QHBoxLayout):
             play_icon = QIcon('img/play.png')
             stop_icon = QIcon('img/stop.png')
             install_icon = QIcon('img/download.png')
-            parent = parent_
 
         self.song_title = song_title
         self.main_window_ptr = main_window_ptr
+        self.parent = parent_
         self.tf_path = tf_path
         self.sound = None
         self.play_obj = None
@@ -83,7 +97,7 @@ class SoundContainer(QHBoxLayout):
         play_button.setIcon(play_icon)
 
         stop_button = QPushButton()
-        stop_button.clicked.connect(lambda: self.play_obj.stop())
+        stop_button.clicked.connect(lambda: self.play_obj.stop() if self.play_obj else None)
         stop_button.setIcon(stop_icon)
 
         install_button = QPushButton()
@@ -101,16 +115,7 @@ class SoundContainer(QHBoxLayout):
         try:
             if not self.sound:
                 self.sound = _download_file(self.download_link)
-            self.sound.seek(0)
-
-            wave_read = wave_open(self.sound, 'rb')
-            audio_data = wave_read.readframes(wave_read.getnframes())
-            num_channels = wave_read.getnchannels()
-            bytes_per_sample = wave_read.getsampwidth()
-            sample_rate = wave_read.getframerate()
-
-            wave_obj = WaveObject(audio_data, num_channels, bytes_per_sample, sample_rate)
-            self.play_obj = wave_obj.play()
+            self.play_obj = play_sound(self.sound)
         except ValueError:
             print("Error! Couldn't play sound")
 
@@ -120,13 +125,14 @@ class SoundContainer(QHBoxLayout):
 
         if response == 1:  # Install as killsound
             sound_name = 'killsound.wav'
-            parent.current_ks = self.song_title
         elif response == 0:  # Hitsound
             sound_name = 'hitsound.wav'
-            parent.current_hs = self.song_title
         else:  # In case user closes dialog window
             dialog.destroy()
             return
+
+        if not self.sound:
+            self.sound = _download_file(self.download_link)
 
         # Do not use os.chdir() because it brakes icon loading!
 
@@ -146,6 +152,8 @@ class SoundContainer(QHBoxLayout):
         with open(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui/' + sound_name, 'wb') as file:
             self.sound.seek(0)
             file.write(self.sound.read())
+
+        self.parent.on_sound_installed()
 
         dialog.destroy()
 
