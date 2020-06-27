@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QStackedWidget, QErrorMessage, QFrame
 
 import file_parser
+import os
+from time import ctime
 from containers import *
 
 
@@ -42,12 +44,14 @@ class SoundsPage(QWidget):
         # Refresh part
         refresh_hbox = QHBoxLayout()
 
-        refresh_label = QLabel('#REFRESH_LABEL')
+        
+        refresh_time = ctime(os.path.getmtime('sounds_db.xml'))
+        self.refresh_label = QLabel('Last refresh:\n' + refresh_time)
         refresh_btn = QPushButton('Refresh DB')
         refresh_btn.setIcon(QIcon('img/refresh.png'))
         refresh_btn.clicked.connect(self._refresh_db)
 
-        refresh_hbox.addWidget(refresh_label)
+        refresh_hbox.addWidget(self.refresh_label)
         refresh_hbox.addWidget(refresh_btn, alignment=Qt.AlignRight)
 
         # Kill sound part
@@ -150,14 +154,11 @@ class SoundsPage(QWidget):
         self.main_layout.addLayout(browser_part)
 
     def _delete_current_sound(self, sound):
-        import os
         try:
             os.remove(self.tf_path + '/tf/custom/tf2hitsounds/sound/ui/' + sound + '.wav')
         except FileNotFoundError:
             dialog = QErrorMessage(self.main_window_ptr)
             dialog.showMessage("Error! There's no installed " + sound)
-        finally:
-            del os
 
     def _load_current_sounds(self):
         # Check dirs...
@@ -197,7 +198,9 @@ class SoundsPage(QWidget):
         for i in self.browser_stack.children()[1:]:  # Ignore QStackedLayout
             self.browser_stack.removeWidget(i)
         self.sounds = file_parser.refresh_db('sounds_db')
+        self.browser_stack.addWidget(QWidget())
         self._load_current_page()
+        self.refresh_label.setText('Last refresh"\n' + ctime(os.path.getmtime('sounds_db.xml')))
 
     def _load_current_page(self):
         layout = QVBoxLayout()
