@@ -200,7 +200,7 @@ class SoundsPage(QWidget):
         self.sounds = file_parser.refresh_db('sounds_db')
         self.browser_stack.addWidget(QWidget())
         self._load_current_page()
-        self.refresh_label.setText('Last refresh"\n' + ctime(os.path.getmtime('sounds_db.xml')))
+        self.refresh_label.setText('Last refresh:\n' + ctime(os.path.getmtime('sounds_db.xml')))
 
     def _load_current_page(self):
         layout = QVBoxLayout()
