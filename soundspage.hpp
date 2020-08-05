@@ -1,8 +1,13 @@
 #ifndef SOUNDSPAGE_HPP
 #define SOUNDSPAGE_HPP
 
-#include "pagebase.hpp"
 #include <iostream>
+
+#include "pagebase.hpp"
+#include "soundcontainer.hpp"
+#include "fileparser.hpp"
+
+#define MAX_SOUNDS_COUNT_ON_PAGE 10
 
 class SoundsPage: public PageBase
 {

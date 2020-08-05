@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Connect switch buttons
     // I don't understand why '=' instead of '&' works
-    // If you do know plz answer me using adress on my GH
+    // If you do know plz answer me using adress on my GH page
     connect(huds_button,
             &QPushButton::clicked,
             this,

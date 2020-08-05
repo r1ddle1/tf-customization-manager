@@ -15,6 +15,28 @@ PageBase::~PageBase()
     //dtor
 }
 
+void PageBase::on_go_back_button_pressed()
+{
+    if (_current_page_index) {
+        // Looks like without takeWidget() function being called
+        // Qt deletes the object
+        _scroll_area->takeWidget();
+        _scroll_area->setWidget(_pages[--_current_page_index]);
+        _current_page_label->setText("Page " +
+                                     QString::number(_current_page_index + 1));
+    }
+}
+
+void PageBase::on_go_forward_button_pressed()
+{
+    if (_current_page_index != _pages.size() - 1) {
+        _scroll_area->takeWidget();
+        _scroll_area->setWidget(_pages[++_current_page_index]);
+        _current_page_label->setText("Page " +
+                                     QString::number(_current_page_index + 1));
+    }
+}
+
 
 void PageBase::create_options_part(QHBoxLayout* main_layout)
 {
@@ -54,10 +76,21 @@ void PageBase::create_browser_part(QHBoxLayout* main_layout,
     QHBoxLayout *page_switching_hbox = new QHBoxLayout();
     QPushButton *go_back_btn = new QPushButton("<-");
     QPushButton *go_forward_btn = new QPushButton("->");
-    QLabel *current_page_label = new QLabel("Page 1");
+    _current_page_label = new QLabel("Page 1");
+
+    // Connect buttons...
+    connect(go_back_btn,
+            &QPushButton::clicked,
+            this,
+            &PageBase::on_go_back_button_pressed);
+
+    connect(go_forward_btn,
+            &QPushButton::clicked,
+            this,
+            &PageBase::on_go_forward_button_pressed);
 
     page_switching_hbox->addWidget(go_back_btn);
-    page_switching_hbox->addWidget(current_page_label);
+    page_switching_hbox->addWidget(_current_page_label);
     page_switching_hbox->addWidget(go_forward_btn);
     page_switching_hbox->setAlignment(Qt::AlignHCenter);
 
