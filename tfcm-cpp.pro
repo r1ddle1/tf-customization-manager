@@ -38,3 +38,12 @@ HEADERS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    img/delete.png \
+    img/install.png \
+    img/next.png \
+    img/play.png \
+    img/prev.png \
+    img/refresh.png \
+    img/stop.png

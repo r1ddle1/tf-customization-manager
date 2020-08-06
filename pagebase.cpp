@@ -47,6 +47,8 @@ void PageBase::create_options_part(QHBoxLayout* main_layout)
     _last_refresh_label = new QLabel("Last refresh:\n???");
     QPushButton *refresh_db_button = new QPushButton("Refresh DB");
 
+    refresh_db_button->setIcon(QIcon("img/refresh.png"));
+
     refresh_layout->addWidget(_last_refresh_label);
     refresh_layout->addWidget(refresh_db_button);
 
@@ -74,9 +76,12 @@ void PageBase::create_browser_part(QHBoxLayout* main_layout,
     browser_part->addWidget(_scroll_area);
 
     QHBoxLayout *page_switching_hbox = new QHBoxLayout();
-    QPushButton *go_back_btn = new QPushButton("<-");
-    QPushButton *go_forward_btn = new QPushButton("->");
+    QPushButton *go_back_btn = new QPushButton();
+    QPushButton *go_forward_btn = new QPushButton();
     _current_page_label = new QLabel("Page 1");
+
+    go_back_btn->setIcon(QIcon("img/prev.png"));
+    go_forward_btn->setIcon(QIcon("img/next.png"));
 
     // Connect buttons...
     connect(go_back_btn,

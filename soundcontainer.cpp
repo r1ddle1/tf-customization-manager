@@ -12,9 +12,13 @@ SoundContainer::SoundContainer(QString name, QString author, QString download_li
 
     QHBoxLayout *buttons_layout = new QHBoxLayout();
 
-    QPushButton *play_btn = new QPushButton("Play");
-    QPushButton *stop_btn = new QPushButton("Stop");
-    QPushButton *install_btn = new QPushButton("Install");
+    QPushButton *play_btn = new QPushButton();
+    QPushButton *stop_btn = new QPushButton();
+    QPushButton *install_btn = new QPushButton();
+
+    play_btn->setIcon(QIcon("img/play.png"));
+    stop_btn->setIcon(QIcon("img/stop.png"));
+    install_btn->setIcon(QIcon("img/install.png"));
 
     buttons_layout->setAlignment(Qt::AlignRight);
 
