@@ -1,8 +1,9 @@
 #include "soundcontainer.hpp"
 
 SoundContainer::SoundContainer(QString name, QString author, QString download_link)
-    : _download_link(download_link)
 {
+    _media_content = new QMediaContent(QUrl(download_link));
+
     QHBoxLayout *main_layout = new QHBoxLayout();
     setLayout(main_layout);
 
@@ -20,6 +21,16 @@ SoundContainer::SoundContainer(QString name, QString author, QString download_li
     stop_btn->setIcon(QIcon("img/stop.png"));
     install_btn->setIcon(QIcon("img/install.png"));
 
+    connect(play_btn,
+            &QPushButton::clicked,
+            this,
+            &SoundContainer::play_audio);
+
+    connect(stop_btn,
+            &QPushButton::clicked,
+            this,
+            &SoundContainer::stop_audio);
+
     buttons_layout->setAlignment(Qt::AlignRight);
 
     main_layout->addWidget(label);
@@ -34,9 +45,16 @@ SoundContainer::SoundContainer(QString name, QString author, QString download_li
 SoundContainer::~SoundContainer()
 {
     // TODO: Realize freeing memory
+
 }
 
 
 void SoundContainer::play_audio()
 {
+    AudioPlayer::GetInstance()->play_audio(*_media_content);
+}
+
+void SoundContainer::stop_audio()
+{
+    AudioPlayer::GetInstance()->stop_audio();
 }

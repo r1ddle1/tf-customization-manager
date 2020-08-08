@@ -5,7 +5,9 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
+#include <iostream>
 
+#include "audioplayer.hpp"
 
 class SoundContainer : public QWidget
 {
@@ -17,7 +19,7 @@ public:
     void stop_audio();
 
 private:
-    const QString _download_link;
+    const QMediaContent* _media_content;
 };
 
 #endif // SOUNDCONTAINER_H
