@@ -12,9 +12,11 @@ using namespace std;
 // Improve compile time
 #define PUGIXML_NO_XPATH
 
-#define HUDS_DB_FILE_NAME "huds.xml"
+#define SOUND_DB_FILE_URL "https://raw.githubusercontent.com/r1ddle1/tfcm-databases/master/sounds.xml"
+
+#define HUD_DB_FILE_NAME "huds.xml"
 #define SOUND_DB_FILE_NAME "sounds.xml"
-#define CFGS_DB_FILE_NAME "cfgs.xml";
+#define CFG_DB_FILE_NAME "cfgs.xml";
 
 struct SoundInfoStruct {
     SoundInfoStruct(QString _title, QString _author, QString _download_link)
