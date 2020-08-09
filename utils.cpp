@@ -1,14 +1,16 @@
-#include <iostream>
-#include <fstream>
-#include <curl/curl.h>
+#include "utils.hpp"
+
+#ifdef WIN32
+  #define stat _stat
+#endif
 
 
-static size_t write_data(void *ptr, size_t size, size_t nmemb, FILE* stream)
+static size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream)
 {
     return fwrite(ptr, size, nmemb, stream);
 }
 
-std::FILE* download_file(const char *url)
+std::FILE* download_file(const char* url)
 {
     curl_global_init(CURL_GLOBAL_ALL);
 
@@ -47,7 +49,7 @@ std::FILE* download_file(const char *url)
 }
 
 
-void download_file_to_disk(const char *url, const char *file_path)
+void download_file_to_disk(const char* url, const char* file_path)
 {
     FILE* file = download_file(url);
     std::rewind(file);
@@ -62,4 +64,13 @@ void download_file_to_disk(const char *url, const char *file_path)
 
     fclose(file);
     write_file.close();
+}
+
+
+const char* get_file_creation_date(const char* file_path)
+{
+    struct stat t_stat;
+    stat(file_path, &t_stat);
+    struct tm* timeinfo = localtime(&t_stat.st_mtime);
+    return asctime(timeinfo);
 }

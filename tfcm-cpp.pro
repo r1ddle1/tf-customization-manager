@@ -36,7 +36,8 @@ HEADERS += \
     mainwindow.hpp \
     pagebase.hpp \
     soundcontainer.hpp \
-    soundspage.hpp
+    soundspage.hpp \
+    utils.hpp
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

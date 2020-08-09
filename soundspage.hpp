@@ -2,6 +2,12 @@
 #define SOUNDSPAGE_HPP
 
 #include <iostream>
+#include <sys/stat.h>
+
+
+#ifdef WIN32
+  #define stat _stat
+#endif
 
 #include "pagebase.hpp"
 #include "soundcontainer.hpp"
@@ -15,7 +21,9 @@ public:
     SoundsPage();
     ~SoundsPage() {}
 
-    virtual void on_refresh_db_clicked();
+    virtual void load_db() override;
+private:
+    void display_db();
 };
 
 #endif // SOUNDSPAGE_HPP

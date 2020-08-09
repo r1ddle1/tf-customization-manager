@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "audioplayer.hpp"
+#include "utils.hpp"
 
 class SoundContainer : public QWidget
 {

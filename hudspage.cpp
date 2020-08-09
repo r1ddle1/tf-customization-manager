@@ -1,11 +1,13 @@
 #include "hudspage.hpp"
 
-HudsPage::HudsPage(): PageBase("HUDs browser")
+HudsPage::HudsPage(): PageBase("HUDs browser",
+                               "#DB_NAME",
+                               "#DB_LINK")
 {
 
 }
 
-void HudsPage::on_refresh_db_clicked()
+void HudsPage::load_db()
 {
 
 }

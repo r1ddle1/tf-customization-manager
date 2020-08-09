@@ -45,7 +45,6 @@ SoundContainer::SoundContainer(QString name, QString author, QString download_li
 SoundContainer::~SoundContainer()
 {
     // TODO: Realize freeing memory
-
 }
 
 

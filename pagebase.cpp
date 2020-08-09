@@ -1,7 +1,9 @@
 #include "pagebase.hpp"
 
 
-PageBase::PageBase(QString browser_name)
+PageBase::PageBase(QString browser_name, const char* db_path, const char* db_url)
+    : _DB_FILE_PATH(db_path)
+    , _DB_URL(db_url)
 {
     QHBoxLayout *main_layout = new QHBoxLayout();
     setLayout(main_layout);
@@ -13,6 +15,12 @@ PageBase::PageBase(QString browser_name)
 PageBase::~PageBase()
 {
     //dtor
+}
+
+void PageBase::on_refresh_db_clicked()
+{
+    download_file_to_disk(_DB_URL, _DB_FILE_PATH);
+    load_db();
 }
 
 void PageBase::on_go_back_button_pressed()

@@ -6,17 +6,20 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
-
 #include <iostream>
+
+#include "utils.hpp"
+
 
 class PageBase : public QWidget
 {
     Q_OBJECT
 public:
-    PageBase(QString browser_name);
+    PageBase(QString browser_name, const char* db_path, const char* db_url);
     virtual ~PageBase();
 
-    virtual void on_refresh_db_clicked() = 0;
+    void on_refresh_db_clicked();
+    virtual void load_db() = 0;
 
 protected:
     QLabel *_last_refresh_label;
@@ -34,6 +37,9 @@ private:
 
     void create_options_part(QHBoxLayout* main_layout);
     void create_browser_part(QHBoxLayout* main_layout, QString &browser_name);
+
+    const char* const _DB_FILE_PATH;
+    const char* const _DB_URL;
 };
 
 #endif // PAGEBASE_HPP
