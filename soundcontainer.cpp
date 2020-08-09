@@ -1,5 +1,6 @@
 #include "soundcontainer.hpp"
 
+
 SoundContainer::SoundContainer(QString name, QString author, QString download_link)
 {
     _media_content = new QMediaContent(QUrl(download_link));
@@ -52,6 +53,7 @@ void SoundContainer::play_audio()
 {
     AudioPlayer::GetInstance()->play_audio(*_media_content);
 }
+
 
 void SoundContainer::stop_audio()
 {

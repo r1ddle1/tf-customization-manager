@@ -4,7 +4,7 @@ SoundsPage::SoundsPage(): PageBase("Sound Browser",
                                    SOUND_DB_FILE_NAME,
                                    SOUND_DB_FILE_URL)
 {
-    on_refresh_db_clicked();
+    load_db();
 }
 
 void SoundsPage::load_db()
