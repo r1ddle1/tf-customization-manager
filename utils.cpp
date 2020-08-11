@@ -10,6 +10,7 @@ static size_t write_data(void* ptr, size_t size, size_t nmemb, FILE* stream)
     return fwrite(ptr, size, nmemb, stream);
 }
 
+
 std::FILE* download_file(const char* url)
 {
     curl_global_init(CURL_GLOBAL_ALL);
@@ -71,6 +72,11 @@ const char* get_file_creation_date(const char* file_path)
 {
     struct stat t_stat;
     stat(file_path, &t_stat);
+
     struct tm* timeinfo = localtime(&t_stat.st_mtime);
-    return asctime(timeinfo);
+
+    char* modified_time = new char[50];
+    strftime(modified_time, 50, "%X\n%x", timeinfo);
+    std::cout << modified_time << '\n';
+    return modified_time;
 }
