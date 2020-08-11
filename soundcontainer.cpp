@@ -8,9 +8,16 @@ SoundContainer::SoundContainer(QString name, QString author, QString download_li
     QHBoxLayout *main_layout = new QHBoxLayout();
     setLayout(main_layout);
 
-    QString label_text = "<b>" + name + "</b>" + "\n<i>by " + author;
+    name = "<html><head/><body><p><span style=\" font-size:14pt; font-weight:100;\">" + name;
+    author = "<html><head/><body><p>Author: " + author + "</p></body></html>";
 
-    QLabel *label = new QLabel(label_text);
+    QVBoxLayout* labels_vbox = new QVBoxLayout();
+
+    QLabel *name_label = new QLabel(name);
+    QLabel *author_label = new QLabel(author);
+
+    labels_vbox->addWidget(name_label);
+    labels_vbox->addWidget(author_label);
 
     QHBoxLayout *buttons_layout = new QHBoxLayout();
 
@@ -34,7 +41,7 @@ SoundContainer::SoundContainer(QString name, QString author, QString download_li
 
     buttons_layout->setAlignment(Qt::AlignRight);
 
-    main_layout->addWidget(label);
+    main_layout->addLayout(labels_vbox);
     main_layout->addLayout(buttons_layout);
 
     buttons_layout->addWidget(play_btn);

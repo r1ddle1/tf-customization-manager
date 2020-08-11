@@ -77,6 +77,5 @@ const char* get_file_creation_date(const char* file_path)
 
     char* modified_time = new char[50];
     strftime(modified_time, 50, "%X\n%x", timeinfo);
-    std::cout << modified_time << '\n';
     return modified_time;
 }

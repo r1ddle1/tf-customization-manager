@@ -38,7 +38,7 @@ void SoundsPage::load_db()
     _scroll_area->setWidgetResizable(true);
 
 
-    // Fourthly get creation date of the db
+    // Fourthly get creation date of the db & use it too
     _last_refresh_label->setText(QString("Last refresh:\n") +
                                  get_file_creation_date(SOUND_DB_FILE_NAME));
 }
