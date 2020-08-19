@@ -18,7 +18,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    audioplayer.cpp \
     fileparser.cpp \
     hudspage.cpp \
     include/pugi/pugixml.cpp \
@@ -30,7 +29,6 @@ SOURCES += \
     utils.cpp
 
 HEADERS += \
-    audioplayer.hpp \
     fileparser.hpp \
     hudspage.hpp \
     mainwindow.hpp \

@@ -6,8 +6,8 @@
 #include <QLabel>
 #include <QPushButton>
 #include <iostream>
+#include <QSoundEffect>
 
-#include "audioplayer.hpp"
 #include "utils.hpp"
 
 class SoundContainer : public QWidget
@@ -20,7 +20,8 @@ public:
     void stop_audio();
 
 private:
-    const QMediaContent* _media_content;
+    QSoundEffect _sound_data;
+    const QString _download_link;
 };
 
 #endif // SOUNDCONTAINER_H

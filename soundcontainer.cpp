@@ -2,8 +2,8 @@
 
 
 SoundContainer::SoundContainer(QString name, QString author, QString download_link)
+    : _download_link(download_link)
 {
-    _media_content = new QMediaContent(QUrl(download_link));
 
     QHBoxLayout *main_layout = new QHBoxLayout();
     setLayout(main_layout);
@@ -58,11 +58,17 @@ SoundContainer::~SoundContainer()
 
 void SoundContainer::play_audio()
 {
-    AudioPlayer::GetInstance()->play_audio(*_media_content);
+    try {
+        _sound_data.setSource(_download_link);
+        _sound_data.play();
+    } catch (...) {
+        std::cerr << "Error! I can't play this sound!\n";
+    }
 }
 
 
 void SoundContainer::stop_audio()
 {
-    AudioPlayer::GetInstance()->stop_audio();
+    _sound_data.stop();
 }
+
