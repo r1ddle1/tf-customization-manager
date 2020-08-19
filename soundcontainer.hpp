@@ -16,8 +16,8 @@ class SoundContainer : public QWidget
 public:
     SoundContainer(QString name, QString author, QString download_link);
     ~SoundContainer();
-    void play_audio();
-    void stop_audio();
+    void on_play_button_clicked();
+    void on_stop_button_clicked();
 
 private:
     QSoundEffect _sound_data;

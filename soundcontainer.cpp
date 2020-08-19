@@ -32,12 +32,12 @@ SoundContainer::SoundContainer(QString name, QString author, QString download_li
     connect(play_btn,
             &QPushButton::clicked,
             this,
-            &SoundContainer::play_audio);
+            &SoundContainer::on_play_button_clicked);
 
     connect(stop_btn,
             &QPushButton::clicked,
             this,
-            &SoundContainer::stop_audio);
+            &SoundContainer::on_stop_button_clicked);
 
     buttons_layout->setAlignment(Qt::AlignRight);
 
@@ -56,7 +56,7 @@ SoundContainer::~SoundContainer()
 }
 
 
-void SoundContainer::play_audio()
+void SoundContainer::on_play_button_clicked()
 {
     try {
         _sound_data.setSource(_download_link);
@@ -67,7 +67,7 @@ void SoundContainer::play_audio()
 }
 
 
-void SoundContainer::stop_audio()
+void SoundContainer::on_stop_button_clicked()
 {
     _sound_data.stop();
 }
