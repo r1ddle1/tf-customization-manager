@@ -18,21 +18,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    configmanager.cpp \
     fileparser.cpp \
     hudspage.cpp \
     include/pugi/pugixml.cpp \
     main.cpp \
     mainwindow.cpp \
     pagebase.cpp \
+    requesttfpathdialog.cpp \
     soundcontainer.cpp \
     soundspage.cpp \
     utils.cpp
 
 HEADERS += \
+    configmanager.h \
     fileparser.hpp \
     hudspage.hpp \
     mainwindow.hpp \
     pagebase.hpp \
+    requesttfpathdialog.h \
     soundcontainer.hpp \
     soundspage.hpp \
     utils.hpp

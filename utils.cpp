@@ -68,7 +68,7 @@ void download_file_to_disk(const char* url, const char* file_path)
 }
 
 
-const char* get_file_creation_date(const char* file_path)
+const char* get_file_creation_date(const char *file_path)
 {
     struct stat t_stat;
     stat(file_path, &t_stat);
@@ -78,4 +78,11 @@ const char* get_file_creation_date(const char* file_path)
     char* modified_time = new char[50];
     strftime(modified_time, 50, "%X\n%x", timeinfo);
     return modified_time;
+}
+
+
+bool is_tf_path(QString path)
+{
+    QDir dir(path + "/tf/");
+    return dir.exists();
 }
