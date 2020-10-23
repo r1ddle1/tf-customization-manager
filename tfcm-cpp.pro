@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    cfgspage.cpp \
     configmanager.cpp \
     fileparser.cpp \
     hudspage.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
     utils.cpp
 
 HEADERS += \
+    cfgspage.h \
     configmanager.h \
     fileparser.hpp \
     hudspage.hpp \

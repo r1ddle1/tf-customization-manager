@@ -31,7 +31,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Add pages to stacked widget
     auto huds_page = new HudsPage();
     auto sounds_page = new SoundsPage();
-    auto cfgs_page = new SoundsPage();
+    auto cfgs_page = new CfgsPage();
 
 
     stacked_widget->addWidget(huds_page);

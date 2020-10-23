@@ -9,6 +9,7 @@
 
 #include "hudspage.hpp"
 #include "soundspage.hpp"
+#include "cfgspage.h"
 
 
 class MainWindow : public QDialog
